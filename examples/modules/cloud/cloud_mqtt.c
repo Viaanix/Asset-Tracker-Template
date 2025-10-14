@@ -47,10 +47,82 @@ BUILD_ASSERT(CONFIG_APP_CLOUD_MQTT_WATCHDOG_TIMEOUT_SECONDS >
 	     CONFIG_APP_CLOUD_MQTT_MSG_PROCESSING_TIMEOUT_SECONDS,
 	     "Watchdog timeout must be greater than maximum message processing time");
 
-static const unsigned char ca_certificate[] = {
-	#include ATT_MQTT_CA_CERT
-	(0x00)
-};
+static const unsigned char ca_certificate[] =
+	"-----BEGIN CERTIFICATE-----\r\n"
+	"MIIEDzCCAvegAwIBAgIBADANBgkqhkiG9w0BAQUFADBoMQswCQYDVQQGEwJVUzEl\r\n"
+	"MCMGA1UEChMcU3RhcmZpZWxkIFRlY2hub2xvZ2llcywgSW5jLjEyMDAGA1UECxMp\r\n"
+	"U3RhcmZpZWxkIENsYXNzIDIgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwHhcNMDQw\r\n"
+	"NjI5MTczOTE2WhcNMzQwNjI5MTczOTE2WjBoMQswCQYDVQQGEwJVUzElMCMGA1UE\r\n"
+	"ChMcU3RhcmZpZWxkIFRlY2hub2xvZ2llcywgSW5jLjEyMDAGA1UECxMpU3RhcmZp\r\n"
+	"ZWxkIENsYXNzIDIgQ2VydGlmaWNhdGlvbiBBdXRob3JpdHkwggEgMA0GCSqGSIb3\r\n"
+	"DQEBAQUAA4IBDQAwggEIAoIBAQC3Msj+6XGmBIWtDBFk385N78gDGIc/oav7PKaf\r\n"
+	"8MOh2tTYbitTkPskpD6E8J7oX+zlJ0T1KKY/e97gKvDIr1MvnsoFAZMej2YcOadN\r\n"
+	"+lq2cwQlZut3f+dZxkqZJRRU6ybH838Z1TBwj6+wRir/resp7defqgSHo9T5iaU0\r\n"
+	"X9tDkYI22WY8sbi5gv2cOj4QyDvvBmVmepsZGD3/cVE8MC5fvj13c7JdBmzDI1aa\r\n"
+	"K4UmkhynArPkPw2vCHmCuDY96pzTNbO8acr1zJ3o/WSNF4Azbl5KXZnJHoe0nRrA\r\n"
+	"1W4TNSNe35tfPe/W93bC6j67eA0cQmdrBNj41tpvi/JEoAGrAgEDo4HFMIHCMB0G\r\n"
+	"A1UdDgQWBBS/X7fRzt0fhvRbVazc1xDCDqmI5zCBkgYDVR0jBIGKMIGHgBS/X7fR\r\n"
+	"zt0fhvRbVazc1xDCDqmI56FspGowaDELMAkGA1UEBhMCVVMxJTAjBgNVBAoTHFN0\r\n"
+	"YXJmaWVsZCBUZWNobm9sb2dpZXMsIEluYy4xMjAwBgNVBAsTKVN0YXJmaWVsZCBD\r\n"
+	"bGFzcyAyIENlcnRpZmljYXRpb24gQXV0aG9yaXR5ggEAMAwGA1UdEwQFMAMBAf8w\r\n"
+	"DQYJKoZIhvcNAQEFBQADggEBAAWdP4id0ckaVaGsafPzWdqbAYcaT1epoXkJKtv3\r\n"
+	"L7IezMdeatiDh6GX70k1PncGQVhiv45YuApnP+yz3SFmH8lU+nLMPUxA2IGvd56D\r\n"
+	"eruix/U0F47ZEUD0/CwqTRV/p2JdLiXTAAsgGh1o+Re49L2L7ShZ3U0WixeDyLJl\r\n"
+	"xy16paq8U4Zt3VekyvggQQto8PT7dL5WXXp59fkdheMtlb71cZBDzI0fmgAKhynp\r\n"
+	"VSJYACPq4xJDKVtHCN2MQWplBqjlIapBtJUhlbl90TSrE9atvNziPTnNvT51cKEY\r\n"
+	"WQPJIrSPnNVeKtelttQKbfi3QBFGmh95DmK/D5fs4C8fF5Q=\r\n"
+	"-----END CERTIFICATE-----\r\n";
+
+static const unsigned char public_cert[] =
+	"-----BEGIN CERTIFICATE-----\r\n"                                     
+	"MIIDWjCCAkKgAwIBAgIVANYZUwHk3TtD7cjAsyXek2wVQa7LMA0GCSqGSIb3DQEB\r\n"
+	"CwUAME0xSzBJBgNVBAsMQkFtYXpvbiBXZWIgU2VydmljZXMgTz1BbWF6b24uY29t\r\n"
+	"IEluYy4gTD1TZWF0dGxlIFNUPVdhc2hpbmd0b24gQz1VUzAeFw0yMTA5MDYxOTMy\r\n"
+	"NTFaFw00OTEyMzEyMzU5NTlaMB4xHDAaBgNVBAMME0FXUyBJb1QgQ2VydGlmaWNh\r\n"
+	"dGUwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCaFPIc+WGRY8WiWUvS\r\n"
+	"yBqZGOkKVWaD69uEYSw9IKL07kHvgly/7aU+kObbpjDwGe536uhfQMG+FHB6PWhN\r\n"
+	"ldSHwr57Von8qfTCju7gIOVhpboNHFA7Jp9o4wEGPsus1vXE8rdeUIRlQso2MwSr\r\n"
+	"tu4kbLMsbM1SpjE8vnET9AsYqAQbWDF8btt7cCRQe7vegocC96Vuq35kxFNhwSRd\r\n"
+	"bZvAu/p0cNL06imBs7XWG1fd5RcK3nhMYnwc6jW8F5AwKsuOUyyZHXoMfNP4Oc9J\r\n"
+	"oP+0R2F3miGhPhFkssd+0NZXnRKjMzdAfdjHWePM1+vz5iXLZ2gmIwi+52mYer0N\r\n"
+	"LoVDAgMBAAGjYDBeMB8GA1UdIwQYMBaAFPj6IEqkMuMyqoLltVJ/GfdOQaNFMB0G\r\n"
+	"A1UdDgQWBBRaftCVvBfH1WUyF3z19xFkBh7/jDAMBgNVHRMBAf8EAjAAMA4GA1Ud\r\n"
+	"DwEB/wQEAwIHgDANBgkqhkiG9w0BAQsFAAOCAQEACbwSOZzag5JVmycc6S5m34oq\r\n"
+	"T/IaEl5dQ255qHp2DGr81mluh0vpgnncRILRFSuvEOUuR/ftzo5JPhpKduX6sTKK\r\n"
+	"zuEWDQx6qeoQqHVuOkhhHRgG6umyCjNMxPeg5+JqDw+j1KeWzz1aTgXUDrTJv23S\r\n"
+	"cccTmLr3bu4omPaaAHwtkzCPjuBBvlIjhp9nC3H2bs1xYmdwZULNp5auklvjhc+P\r\n"
+	"0rFADUTCtV63bnCe+brCde8Dy+ekOPi4ZE3/4kNYZ2J1L7Ex9cWql/N2Jp2pP8bs\r\n"
+	"sQJe24H3rxTRLU7UZoH1AfLrWuyEYV3akkKBHa+ZUww00NGHwDLGho6aMYe65w==\r\n"
+	"-----END CERTIFICATE-----\r\n";
+
+static const unsigned char private_cert[] =
+	"-----BEGIN RSA PRIVATE KEY-----\r\n"                                 
+	"MIIEogIBAAKCAQEAmhTyHPlhkWPFollL0sgamRjpClVmg+vbhGEsPSCi9O5B74Jc\r\n"
+	"v+2lPpDm26Yw8Bnud+roX0DBvhRwej1oTZXUh8K+e1aJ/Kn0wo7u4CDlYaW6DRxQ\r\n"
+	"OyafaOMBBj7LrNb1xPK3XlCEZULKNjMEq7buJGyzLGzNUqYxPL5xE/QLGKgEG1gx\r\n"
+	"fG7be3AkUHu73oKHAvelbqt+ZMRTYcEkXW2bwLv6dHDS9OopgbO11htX3eUXCt54\r\n"
+	"TGJ8HOo1vBeQMCrLjlMsmR16DHzT+DnPSaD/tEdhd5ohoT4RZLLHftDWV50SozM3\r\n"
+	"QH3Yx1njzNfr8+Yly2doJiMIvudpmHq9DS6FQwIDAQABAoIBAC+PSZBh9ZjQCB/t\r\n"
+	"mjbspzEcfEpBRAxyT+bTq7kOit45cMbCIWjorLncNjYUXUSvbGk9bA6CyYqnenRw\r\n"
+	"4fIYzmo9VVhyxNLljvRC9D7gSI1Uf1IurCEl8cyJTTalSW8HRwNMvAbzqXosHIiQ\r\n"
+	"RN/P7j/2AXQz/UiGneoXCoZTLN2l/EbxHcidmYvvFY2bxu/G3IvJE3xGbx3ly8iF\r\n"
+	"GCILvAXmYg1ivwpG708D0PsWdPjCtaJbv6BoV7HBTK0EOjKodHwaJaeRx88lgEzg\r\n"
+	"2dZx+qEs7XOebSYAwWw5SKkW5oO/uZq4+WocE6t+mQcI2J+MX0TlR5clA4Rnw6DG\r\n"
+	"qt5zKYECgYEAyb2nNI1zryHrTrK0HAcC5dHqU2Ozj3GYi+GQEKd+qkHAtUhWa1Ok\r\n"
+	"qHvG+TyUD4wQSo2qzRA5WaDRdzbxEPLZ1V/+dIaLVSIJNzOkZIkXc6Syx3Nqrgk4\r\n"
+	"YYSunHadUxONxUMjqd+h7tlmbfnanjyFsnE88IW75Ceca3w5SYFr3cECgYEAw4Xa\r\n"
+	"icaH1SY4Q9IhNzCUkdusQJ/+9vTUdpFAmLbIbtlym7+tQwf3y1WjPGeftMIpdNbI\r\n"
+	"TZ+N4XLvN6aWHL8Pi65nuuXxiJabjxH+NG7DKjJwL1otpRHhHvyySoNg/M9Te8Ne\r\n"
+	"4qW4zHYQ3TVVdpzTkE2+idg0SU+PblQ2eKG97AMCgYA0WJaDJ1TmE2oIEIx1XUhe\r\n"
+	"M5qWqp8T0EjhutRzzdIrAUasgymRTbHC2eMmFpbgddpgTeQMs3H+FKFlSodAe5MU\r\n"
+	"L4VJ3QNYQq2bejXktEG2ivysjgEXSWMswo3AIXLu9HrrvWEKmfFdlWFjldopBtE2\r\n"
+	"HPXP/xNivvhyV1hR/1fqwQKBgGt3yTTtUH/R8B8nAmbJZv/81GL5DjVDQPyivfSy\r\n"
+	"ktyK3LnK0zsCyCqVOZHcCyZZilvUKmiwCFYgzGe0QtIuGidWh2FtPiMrVPmAlE7R\r\n"
+	"iqhI7Oy6DliqySg1EPJv4AFVG7ftHNxK5pZLVt2fkQgPDyJD+TTfB248MsQbuYz4\r\n"
+	"qeFtAoGACycX3YgRrB/ruGrpJITe/5lmvMwweDyX0GcrwH4ySk3d5NVlpMaMRc82\r\n"
+	"w4Io3G/khGdNwGl/7bZyDeHdLE9BPjKMSP/j6+/HVsVMx4+7hH3zAcclt/r6XRUU\r\n"
+	"HrSV1StzIMnCwVRjcvWXxEd1eL0a2bbURHfBBf4Vpx2cS1F6Ack=\r\n"
+	"-----END RSA PRIVATE KEY-----\r\n";
 
 /* Register subscriber */
 ZBUS_MSG_SUBSCRIBER_DEFINE(cloud_subscriber);
@@ -91,6 +163,21 @@ static void on_modem_init(int ret, void *ctx)
 				       MODEM_KEY_MGMT_CRED_TYPE_CA_CHAIN,
 				       ca_certificate,
 				       sizeof(ca_certificate));
+	
+	if (err != 0) {
+		err = modem_key_mgmt_write(CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+						MODEM_KEY_MGMT_CRED_TYPE_PUBLIC_CERT,
+						public_cert,
+						sizeof(public_cert));
+	}
+
+	if (err != 0) {
+		err = modem_key_mgmt_write(CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+						MODEM_KEY_MGMT_CRED_TYPE_PRIVATE_CERT,
+						private_cert,
+						sizeof(private_cert));
+	}
+	
 	if (err < 0) {
 		LOG_ERR("Failed to write credential: %d", err);
 		return;

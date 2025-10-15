@@ -7,12 +7,14 @@
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
 #include <zephyr/zbus/zbus.h>
+#include <zephyr/shell/shell.h>
 #include <zephyr/smf.h>
 #include <zephyr/task_wdt/task_wdt.h>
 #include <net/mqtt_helper.h>
 #include <modem/nrf_modem_lib.h>
 #include <modem/modem_key_mgmt.h>
 #include <hw_id.h>
+#include <errno.h>
 
 #include "cloud.h"
 #include "network.h"
@@ -146,6 +148,84 @@ ZBUS_CHAN_DEFINE(CLOUD_CHAN,
 		 ZBUS_MSG_INIT(.type = CLOUD_DISCONNECTED)
 );
 
+static void upload_credentials()
+{
+	int err = 0;
+
+	// Note: Ignore the string's null terminator when performing comparison
+
+	err = modem_key_mgmt_cmp(
+		CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+		MODEM_KEY_MGMT_CRED_TYPE_CA_CHAIN,
+		ca_certificate,
+		sizeof(ca_certificate) - 1
+	);
+
+	if (err == 1 || err == -ENOENT) {
+		LOG_WRN("Root certificate mismatch, re-writing...");
+		err = modem_key_mgmt_write(
+			CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+			MODEM_KEY_MGMT_CRED_TYPE_CA_CHAIN,
+			ca_certificate,
+			sizeof(ca_certificate) - 1
+		);
+
+		if (err != 0) {
+			LOG_WRN("Failed to update root certificate: %d", err);
+		}
+	} else if (err != 0) {
+		LOG_WRN("Failed to check root certificate! %d", err);
+	}
+
+	// Note: We cannot read back client cert or private key, so only check if they exist
+
+	bool exist;
+
+	err = modem_key_mgmt_exists(
+		CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+		MODEM_KEY_MGMT_CRED_TYPE_PUBLIC_CERT,
+		&exist
+	);
+
+	if (err == 0 && !exist) {
+		LOG_WRN("Public certificate missing, re-writing...");
+		err = modem_key_mgmt_write(
+			CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+			MODEM_KEY_MGMT_CRED_TYPE_PUBLIC_CERT,
+			public_cert,
+			sizeof(public_cert) - 1
+		);
+
+		if (err != 0) {
+			LOG_WRN("Failed to update client certificate: %d", err);
+		}
+	} else if (err != 0) {
+		LOG_WRN("Failed to check public certificate! %d", err);
+	}
+
+	err = modem_key_mgmt_exists(
+		CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+		MODEM_KEY_MGMT_CRED_TYPE_PRIVATE_CERT,
+		&exist
+	);
+
+	if (err == 0 && !exist) {
+		LOG_WRN("Private key missing, re-writing...");
+		err = modem_key_mgmt_write(
+			CONFIG_APP_CLOUD_MQTT_SEC_TAG,
+			MODEM_KEY_MGMT_CRED_TYPE_PRIVATE_CERT,
+			private_cert,
+			sizeof(private_cert) - 1
+		);
+
+		if (err != 0) {
+			LOG_WRN("Failed to update private key: %d", err);
+		}
+	} else if (err != 0) {
+		LOG_WRN("Failed to check private key! %d", err);
+	}
+}
+
 static void on_modem_init(int ret, void *ctx)
 {
 	ARG_UNUSED(ctx);
@@ -155,32 +235,19 @@ static void on_modem_init(int ret, void *ctx)
 		return;
 	}
 
-	int err = modem_key_mgmt_write(CONFIG_APP_CLOUD_MQTT_SEC_TAG,
-				       MODEM_KEY_MGMT_CRED_TYPE_CA_CHAIN,
-				       ca_certificate,
-				       sizeof(ca_certificate));
-	
-	if (err != 0) {
-		err = modem_key_mgmt_write(CONFIG_APP_CLOUD_MQTT_SEC_TAG,
-						MODEM_KEY_MGMT_CRED_TYPE_PUBLIC_CERT,
-						public_cert,
-						sizeof(public_cert));
-	}
-
-	if (err != 0) {
-		err = modem_key_mgmt_write(CONFIG_APP_CLOUD_MQTT_SEC_TAG,
-						MODEM_KEY_MGMT_CRED_TYPE_PRIVATE_CERT,
-						private_cert,
-						sizeof(private_cert));
-	}
-	
-	if (err < 0) {
-		LOG_ERR("Failed to write credential: %d", err);
-		return;
-	}
+	upload_credentials();
 }
 
 NRF_MODEM_LIB_ON_INIT(att_cloud_mqtt_hook, on_modem_init, NULL);
+
+static int cmd_upload_credentials(const struct shell *sh, size_t argc, char **argv)
+{
+	upload_credentials();
+	return 0;
+}
+
+SHELL_CMD_REGISTER(att_upload_credentials, NULL,
+		   "Uploads credentials to the modem", cmd_upload_credentials);
 
 /* Enumerator to be used in privat cloud channel */
 enum priv_cloud_msg {

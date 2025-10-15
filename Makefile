@@ -23,7 +23,8 @@ BUILD_FW = \
 	-DOVERLAY_CONFIG="boards/$(BOARD_NS).conf" \
 	-DDTC_OVERLAY_FILE="boards/$(BOARD_NS).overlay" \
 	-DEXTRA_CONF_FILE="$(EXTRA_CONF_FILES)" \
-	-DBOARD=$(BOARD); \
+	-DBOARD=$(BOARD) \
+	-Dapp_SNIPPET="nrf91-modem-trace-uart"; \
 	echo ""; \
 	printf "%s %02d:%02d:%02d\n" "Total Build Time:" "$$(( $$SECONDS / 3600 ))" "$$(( ( $$SECONDS / 60 ) % 60 ))" "$$(( $$SECONDS % 60 ))"; \
 	echo ""

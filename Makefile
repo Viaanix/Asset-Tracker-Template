@@ -6,7 +6,7 @@ BOARD = nrf9151dk/nrf9151/ns
 
 ZEPHYR_PROJECT_PATH := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
 ZEPHYR_VIAANIX_BOARD_ROOT ?= $(realpath $(ZEPHYR_PROJECT_PATH)/../../zephyr_boards)
-ZEPHYR_BUILD_PATH = $(ZEPHYR_PROJECT_PATH)/_build_$(PROJECT_NAME)
+ZEPHYR_BUILD_PATH = $(ZEPHYR_PROJECT_PATH)/app/_build_$(PROJECT_NAME)
 
 # TARGET intentionally empty
 TARGET =

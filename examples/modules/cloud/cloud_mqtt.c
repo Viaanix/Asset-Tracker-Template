@@ -234,8 +234,6 @@ static void on_modem_init(int ret, void *ctx)
 		LOG_ERR("Modem init failed, ignoring CA provisioning, : %d", ret);
 		return;
 	}
-
-	upload_credentials();
 }
 
 NRF_MODEM_LIB_ON_INIT(att_cloud_mqtt_hook, on_modem_init, NULL);
